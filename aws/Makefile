@@ -1,31 +1,11 @@
 SHELL := /bin/bash
 
+include .config
+export
+
 $(shell touch .env)
 include .env
 export
-
-AWS_CREDS_FILE=.env
-
-#AWS variables
-#Set these before running
-KOPS_GROUP_NAME=kops-group-4
-KOPS_USER_NAME=kops-user-4
-AWS_KOPS_STATE_BUCKET=killi-ks-bucket1
-
-#Do not change this one
-export KOPS_STATE_STORE=s3://${AWS_KOPS_STATE_BUCKET}
-
-#KOPS cluster name
-#Set this before running
-#It must match your Route53 domain name
-export NAME=k8s.jkilli.com
-
-#KOPS default cluster settings
-#Change these if you'd like
-ZONES=us-east-1a
-NODE_COUNT=3
-MASTER_ZONE=us-east-1a
-
 
 create-kops-group:
 	aws iam create-group --group-name ${KOPS_GROUP_NAME}
@@ -68,21 +48,21 @@ configure-cluster:
 deploy-aws-cluster:
 	kops update cluster --name ${NAME} --yes --admin
 
+create: create-kops-group attach-group-permissions create-kops-user create-kops-access-keys \
+create-k8s-backend create-aws-cluster deploy-aws-cluster
+
+validate-cluster:
+	kops validate cluster --wait 10m
+
 set-k8s-context:
 	kops export kubecfg --name ${NAME} \
 	--state ${KOPS_STATE_STORE} \
 	--admin ;
 
-create: create-kops-group attach-group-permissions create-kops-user create-kops-access-keys \
-create-k8s-backend create-aws-cluster deploy-aws-cluster set-k8s-context 
-
-validate-cluster:
-	kops validate cluster --wait 10m
-
 get-nodes:
 	kubectl get nodes
 
-health-check: validate-cluster get-nodes 
+health-check: validate-cluster set-k8s-context get-nodes 
 
 delete-aws-cluster:
 	kops delete cluster \

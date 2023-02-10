@@ -63,6 +63,8 @@ SKS assumes that you own a domain in Route53 to use as the name of your Kubernet
 
 ### Configuring SKS
 
+All configuration settings (and the only settings you need to change to run SKS) are in the .config file. To configure, do the following:
+
 1. Set the variables for the AWS user and group which SKS will create:
     
     ```KOPS_GROUP_NAME=<some-arbitrary-name>```
