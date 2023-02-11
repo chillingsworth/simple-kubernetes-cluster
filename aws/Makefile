@@ -36,11 +36,9 @@ create-k8s-backend:
 
 create-aws-cluster:
 	kops create cluster \
-	--name ${NAME} \
-	--cloud aws \
-	--state ${KOPS_STATE_STORE} \
-	--node-count ${NODE_COUNT} \
-	--zones ${ZONES}
+	--name=${NAME} \
+	--cloud=aws \
+	--zones=${ZONES}
 
 configure-cluster:
 	kops edit cluster --name ${NAME}
@@ -61,6 +59,15 @@ set-k8s-context:
 
 get-nodes:
 	kubectl get nodes
+
+get-cluster:
+	kubectl get cluster
+
+rolling-update:
+	kops rolling-update cluster
+
+edit-cluster:
+	kops edit cluster --name ${NAME}
 
 health-check: validate-cluster set-k8s-context get-nodes 
 
