@@ -1,4 +1,4 @@
-## Simple Kubernetes Cluster (SKS)
+## Simple Kubernetes Cluster (SKC)
 
 This repo contains a Makefile for building a very minimal Kubernetes cluster in AWS.
 
@@ -11,7 +11,7 @@ This repo contains a Makefile for building a very minimal Kubernetes cluster in 
     * Client Version: ```v1.26.1```
     * Kustomize Version: ```v4.5.7```
 
-SKS assumes that you own a domain in Route53 to use as the name of your Kubernetes cluster. Make sure your domain is registered (through Route53) before you continue:
+SKC assumes that you own a domain in Route53 to use as the name of your Kubernetes cluster. Make sure your domain is registered (through Route53) before you continue:
 
 ```dig ns <your-domain-name>.com```
     
@@ -61,17 +61,17 @@ SKS assumes that you own a domain in Route53 to use as the name of your Kubernet
     
     ```sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl```
 
-### Configuring SKS
+### Configuring SKC
 
-All configuration settings (and the only settings you need to change to run SKS) are in the .config file. To configure, do the following:
+All configuration settings (and the only settings you need to change to run SKC) are in the .config file. To configure, do the following:
 
-1. Set the variables for the AWS user and group which SKS will create:
+1. Set the variables for the AWS user and group which SKC will create:
     
     ```KOPS_GROUP_NAME=<some-arbitrary-name>```
     
     ```KOPS_USER_NAME=<some-arbitrary-name>```
 
-2. Set the variable name for the AWS bucket which SKS will create to hold the state of your KOPS deployment:
+2. Set the variable name for the AWS bucket which SKC will create to hold the state of your KOPS deployment:
     
     ```AWS_KOPS_STATE_BUCKET=<some-arbitrary-name>```
 
@@ -79,7 +79,7 @@ All configuration settings (and the only settings you need to change to run SKS)
         
     ```export NAME=k8s.<your-domain-name>.com```
 
-### Using SKS
+### Using SKC
 
 * Start cluster:
 
@@ -97,4 +97,4 @@ All configuration settings (and the only settings you need to change to run SKS)
 
 ### Security Note
 
-SKS stores access keys for the users it creates in a local ```.env``` file. The ```make -k destroy``` command will remove the file; the command ```make remove-local-env``` will also remove it. However, be cautious not to share the ```.env``` file with anyone (ex. by accidentally commiting to git etc.). Anyone with the keys will be able to use your AWS account via the CLI.
+SKC stores access keys for the users it creates in a local ```.env``` file. The ```make -k destroy``` command will remove the file; the command ```make remove-local-env``` will also remove it. However, be cautious not to share the ```.env``` file with anyone (ex. by accidentally commiting to git etc.). Anyone with the keys will be able to use your AWS account via the CLI.
