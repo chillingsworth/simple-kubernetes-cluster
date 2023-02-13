@@ -69,7 +69,7 @@ rolling-update:
 edit-cluster:
 	kops edit cluster --name ${NAME}
 
-health-check: validate-cluster set-k8s-context get-nodes 
+health-check: validate-cluster
 
 delete-aws-cluster:
 	kops delete cluster \
@@ -81,10 +81,8 @@ delete-k8s-backend:
 	--bucket ${AWS_KOPS_STATE_BUCKET} \
 	--region us-east-1
 
-delete-kops-user:
-	aws iam remove-user-from-group --user-name ${KOPS_USER_NAME} --group-name ${KOPS_GROUP_NAME}
-	aws iam delete-access-key --access-key-id $(shell aws iam list-access-keys --user-name ${KOPS_USER_NAME} | jq '.[][] .AccessKeyId') --user-name ${KOPS_USER_NAME}
-	aws iam delete-user --user-name ${KOPS_USER_NAME}
+delete-kops-group:
+	aws iam delete-group --group-name ${KOPS_GROUP_NAME}
 
 remove-kops-group-policies:
 	aws iam detach-group-policy --policy-arn arn:aws:iam::aws:policy/AmazonEC2FullAccess --group-name ${KOPS_GROUP_NAME}
@@ -95,10 +93,14 @@ remove-kops-group-policies:
 	aws iam detach-group-policy --policy-arn arn:aws:iam::aws:policy/AmazonSQSFullAccess --group-name ${KOPS_GROUP_NAME}
 	aws iam detach-group-policy --policy-arn arn:aws:iam::aws:policy/AmazonEventBridgeFullAccess --group-name ${KOPS_GROUP_NAME}
 
-delete-kops-group:
-	aws iam delete-group --group-name ${KOPS_GROUP_NAME}
+delete-kops-user:
+	aws iam remove-user-from-group --user-name ${KOPS_USER_NAME} --group-name ${KOPS_GROUP_NAME}
+	aws iam delete-access-key --access-key-id $(shell aws iam list-access-keys --user-name ${KOPS_USER_NAME} | jq '.[][] .AccessKeyId') --user-name ${KOPS_USER_NAME}
+	aws iam delete-user --user-name ${KOPS_USER_NAME}
+
+
 
 remove-local-env:
 	rm .env
 
-destroy: delete-aws-cluster delete-k8s-backend delete-kops-user remove-kops-group-policies delete-kops-group remove-local-env
+destroy: delete-aws-cluster delete-k8s-backend remove-kops-group-policies delete-kops-group delete-kops-user remove-local-env
